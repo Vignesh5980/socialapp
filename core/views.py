@@ -1,4 +1,5 @@
 from base64 import urlsafe_b64encode
+# from email.message import EmailMessage
 from lib2to3.pgen2.tokenize import generate_tokens
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes,force_str,DjangoUnicodeDecodeError
