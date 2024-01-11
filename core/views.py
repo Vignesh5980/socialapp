@@ -1,5 +1,4 @@
 from base64 import urlsafe_b64encode
-from email.message import EmailMessage
 from lib2to3.pgen2.tokenize import generate_tokens
 from django.template.loader import render_to_string
 from django.utils.encoding import force_bytes,force_str,DjangoUnicodeDecodeError
@@ -13,7 +12,8 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User, auth
 from django.contrib import messages
-from django.conf import settings
+from django.core.mail import EmailMessage
+from django.conf import settings as conf_settings
 from core.models import *
 from itertools import chain
 
@@ -218,19 +218,18 @@ def signup(request):
                 user = User.objects.create_user(username=username, email=email, password=password)
                 user.save()
 
-                # #email verification
-                # email_subject = "Activate Your Account"
-                # message=render_to_string('activate.html',{
-                #     'user':user,
-                #     'domain': '127.0.0.1:8000',
-                #     'uid':urlsafe_b64encode(force_bytes(user.pk)),
-                #     'token':make_token(user),
-                # })
+                email_subject = "Activate Your Account"
+                message=render_to_string('activate.html',{
+                    'user':user,
+                    'domain': '127.0.0.1:8000',
+                    'uid':urlsafe_base64_encode(force_bytes(user.pk)),
+                    'token':generate_token.make_token(user)
+                })
 
-                # email_message = EmailMessage(email_subject, message, settings.EMAIL_HOST_USER, [email],)
-                # email_message.send()
+                email_message = EmailMessage(email_subject, message, conf_settings.EMAIL_HOST_USER, [email],)
+                email_message.send()
 
-                # messages.success(request, "Activate your account by clicking the link below")
+                messages.success(request, "Activate your account by clicking the link which is been sent to mail")
                 # #email verification ends
 
                 #log user in and redirect to settings page
